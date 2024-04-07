@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "vue-eslint-parser": "^9.4.2"
   }
 }
