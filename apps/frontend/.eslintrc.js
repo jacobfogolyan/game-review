@@ -6,7 +6,4 @@ module.exports = {
   parserOptions: {
     project: true,
   },
-  // rules: {
-  //   "eol-last": "error",
-  // },
 };
