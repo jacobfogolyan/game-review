@@ -8,4 +8,5 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     sourceType: "module",
   },
+  ignorePatterns: [".eslintrc.cjs"],
 };
