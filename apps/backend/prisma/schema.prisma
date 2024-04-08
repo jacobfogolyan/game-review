@@ -39,9 +39,27 @@ model Review {
 }
 
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  username String   @unique
-  email    String   @unique
-  password String
-  reviews  Review[]
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  username        String            @unique
+  email           String            @unique
+  password        String
+  reviews         Review[]
+  UserPermissions UserPermissions[]
+}
+
+enum Role {
+  GUEST
+  USER
+  CONTRIBUTOR
+  MODERATOR
+  ADMIN
+}
+
+model UserPermissions {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  role      Role
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
