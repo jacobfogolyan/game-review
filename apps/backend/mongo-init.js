@@ -1,3 +1,3 @@
 /* eslint-disable no-undef */
-db = db.getSiblingDB('your-database-name');
-db.createCollection('your-collection-name');
+db = db.getSiblingDB('game-review');
+db.createCollection('games');
