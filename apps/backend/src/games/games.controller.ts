@@ -8,18 +8,19 @@ import {
   Delete,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
-import { Prisma } from '@prisma/client';
+import type { GameDto } from './dto';
+import type { games } from './types';
 
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
   @Post()
-  create(@Body() createGameDto: Prisma.GameCreateInput) {
+  create(@Body() createGameDto: GameDto) {
     return this.gamesService.create(createGameDto);
   }
 
-  createMultiple(createGameDtos: Prisma.GameCreateInput[]) {
+  createMultiple(createGameDtos: GameDto[]) {
     const createdGames = [];
     for (const gameDto of createGameDtos) {
       const createdGame = this.gamesService.create(gameDto);
@@ -34,20 +35,17 @@ export class GamesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: games) {
     return this.gamesService.findOne(id);
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateGameDto: Prisma.GameUpdateInput,
-  ) {
-    return this.gamesService.update(id, updateGameDto);
+  update(@Param('id') @Body() id: Pick<GameDto, 'id'>) {
+    return this.gamesService.update(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: Pick<GameDto, 'id'>) {
     return this.gamesService.remove(id);
   }
 }

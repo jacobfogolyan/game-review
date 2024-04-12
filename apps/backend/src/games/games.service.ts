@@ -1,30 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
-import { Prisma } from '@prisma/client';
+import { InjectModel } from '@nestjs/mongoose';
+import { IGame } from './types';
+import type { Model } from 'mongoose';
+import type { GameDto } from './dto';
+
+type games = Pick<GameDto, 'id'>;
 @Injectable()
 export class GamesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(@InjectModel('Games') private gameModel: Model<IGame>) {}
 
-  create(createGameDto: Prisma.GameCreateInput) {
-    return this.databaseService.game.create({ data: createGameDto });
+  async create(createGameDto: GameDto) {
+    return this.gameModel.create({ data: createGameDto });
   }
 
-  findAll() {
-    return this.databaseService.game.findMany();
+  async findAll() {
+    return this.gameModel.find();
   }
 
-  findOne(id: string) {
-    return this.databaseService.game.findUnique({ where: { id } });
+  async findOne(id: games) {
+    return this.gameModel.findOne({ _id: id });
   }
 
-  update(id: string, updateGameDto: Prisma.GameUpdateInput) {
-    return this.databaseService.game.update({
-      where: { id },
-      data: updateGameDto,
-    });
+  async update(id: games) {
+    return this.gameModel.updateOne({ _id: id });
   }
 
-  remove(id: string) {
-    return this.databaseService.game.delete({ where: { id } });
+  async remove(id: games) {
+    return this.gameModel.deleteOne({ _id: id });
   }
 }
