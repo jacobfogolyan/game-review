@@ -11,8 +11,6 @@
    mongodb://root:example@localhost:27017/?authSource=admin
 1. Mongo Express
    http://0.0.0.0:8081/db/admin/
-1. Generate Prisma
-   npx prisma generate
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
