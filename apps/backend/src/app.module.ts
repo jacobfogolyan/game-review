@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost/game-review'),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
   ],
   controllers: [AppController],
   providers: [AppService],
