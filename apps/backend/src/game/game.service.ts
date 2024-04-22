@@ -22,9 +22,9 @@ export class GameService {
     return this.gameModel.find({ _id: id });
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
+  update(id: number, withWhat: Game, updateGameDto: UpdateGameDto) {
     const updatedGame = new this.gameModel(updateGameDto);
-    return updatedGame.updateOne({ _id: id });
+    return updatedGame.updateOne({ _id: id }, withWhat);
   }
 
   remove(id: number) {
