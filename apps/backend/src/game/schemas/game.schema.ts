@@ -1,24 +1,37 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Schema as s } from 'mongoose';
+import { HydratedDocument, Schema as s, Document } from 'mongoose';
+import type { Media, Scores } from '../types';
 
 export type GameDocument = HydratedDocument<Game>;
 
 @Schema()
-export class Game {
+export class Game extends Document {
   @Prop({ required: true })
-  name: string;
+  title: string;
 
   @Prop()
-  year: number;
+  description: string;
 
   @Prop()
-  genre: string;
+  developer: string;
 
   @Prop()
-  rating: number;
+  publisher: string;
 
-  @Prop({ type: s.Types.Date, require: true })
-  date: Date;
+  @Prop()
+  releaseDate: Date;
+
+  @Prop([String])
+  genres: string[];
+
+  @Prop([String])
+  platforms: string[];
+
+  @Prop({ type: Object })
+  media: Media;
+
+  @Prop({ type: Object })
+  scores: Scores;
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game);
