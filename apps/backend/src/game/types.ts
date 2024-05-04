@@ -3,7 +3,7 @@ export interface Media {
   videos: string[];
 }
 
-export interface Scores {
+export interface Score {
   critic: {
     score: number;
     reviewsCount: number;
