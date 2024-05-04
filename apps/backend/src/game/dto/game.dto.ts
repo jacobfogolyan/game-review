@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
-import type { Media, Scores } from '../types';
+import type { Media, Score } from '../types';
+import type { Review } from 'src/review/types';
 
-export class BaseDto {
+export class BaseGameDto {
   readonly title: string;
   readonly description?: string;
   readonly developer?: string;
@@ -10,11 +11,12 @@ export class BaseDto {
   readonly genres?: string[];
   readonly platforms?: string[];
   readonly media?: Media[];
-  readonly scores?: Scores;
+  readonly scores?: Score;
+  readonly reviews: Review[];
 }
 
-export class CreateGameDto extends PartialType(BaseDto) {}
+export class CreateGameDto extends PartialType(BaseGameDto) {}
 
-export class UpdateGameDto extends PartialType(BaseDto) {}
+export class UpdateGameDto extends PartialType(BaseGameDto) {}
 
-export class DeleteGameDto extends PartialType(BaseDto) {}
+export class DeleteGameDto extends PartialType(BaseGameDto) {}
