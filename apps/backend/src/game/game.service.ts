@@ -33,7 +33,7 @@ export class GameService {
     return this.findOne(id);
   }
 
-  remove(id: number) {
+  async remove(id: string) {
     return this.gameModel.deleteOne({ _id: id });
   }
 }
