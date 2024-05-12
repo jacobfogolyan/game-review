@@ -17,13 +17,20 @@ export class GameService {
     return this.gameModel.find().exec();
   }
 
-  findOne(id: number) {
-    return this.gameModel.find({ _id: id });
+  async findOne(id: string): Promise<Game> {
+    return this.gameModel.findById(id);
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    const updatedGame = new this.gameModel(updateGameDto);
-    return updatedGame.updateOne({ _id: id }, updateGameDto);
+  async update(id: string, updateGameDto: UpdateGameDto): Promise<Game> {
+    const result = await this.gameModel
+      .findOneAndUpdate({ _id: id }, { $set: updateGameDto })
+      .exec();
+
+    if (!result) {
+      throw new Error('No document found with the given ID');
+    }
+
+    return this.findOne(id);
   }
 
   remove(id: number) {
