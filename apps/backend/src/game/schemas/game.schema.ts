@@ -6,8 +6,11 @@ export type GameDocument = HydratedDocument<Game>;
 
 @Schema()
 export class Game extends Document {
-  @Prop({ required: true })
+  @Prop()
   title: string;
+
+  @Prop()
+  name: string;
 
   @Prop()
   description: string;
@@ -24,7 +27,7 @@ export class Game extends Document {
   @Prop([String])
   genres: string[];
 
-  @Prop([String])
+  @Prop()
   platforms: string[];
 
   @Prop({ type: Object })
