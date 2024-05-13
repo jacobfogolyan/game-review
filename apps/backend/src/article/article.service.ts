@@ -1,26 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
+import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Article } from './schemas/article.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ArticleService {
-  create(createArticleDto: CreateArticleDto) {
-    return 'This action adds a new article';
+  constructor(
+    @InjectModel(Article.name) private articleModel: Model<Article>,
+  ) {}
+
+  async create(createArticleDto: CreateArticleDto): Promise<Article> {
+    const createdArticle = new this.articleModel(createArticleDto);
+    return createdArticle.save();
   }
 
-  findAll() {
-    return `This action returns all article`;
+  async findAll(): Promise<Article[]> {
+    return this.articleModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(id: string): Promise<Article> {
+    return this.articleModel.findById(id);
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(
+    id: string,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<Article> {
+    const result = await this.articleModel
+      .findOneAndUpdate({ _id: id }, { $set: updateArticleDto })
+      .exec();
+
+    if (!result) {
+      throw new Error('No document found with the given ID');
+    }
+
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: string) {
+    return this.articleModel.deleteOne({ _id: id });
   }
 }
