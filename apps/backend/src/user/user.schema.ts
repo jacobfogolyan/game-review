@@ -1,20 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
-
+import { Document, HydratedDocument, ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User extends Document {
+  @Prop({ required: true, type: mongoose.Types.ObjectId })
+  _id: ObjectId;
+
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop(String)
   description: string;
 
-  @Prop({ required: true, type: [String] })
+  @Prop({ type: [String], default: [] })
   permissions: string[];
 
-  @Prop({ default: [] })
+  @Prop({ type: [Number], default: [] })
   members: number[];
 
   @Prop({ default: '' })
