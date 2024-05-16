@@ -15,12 +15,12 @@ export class GameController {
   constructor(private gameService: GameService) {}
 
   @Post()
-  async create(@Body() createGameDto: CreateGameDto) {
+  create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.gameService.findAll();
   }
 

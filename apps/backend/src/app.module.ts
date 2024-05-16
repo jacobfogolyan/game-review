@@ -6,8 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GameModule } from './game/game.module';
 import { UserModule } from './user/user.module';
 import { ArticleModule } from './article/article.module';
-import { GenericGrudService } from './generic-grud/generic-grud.service';
-import { GenericGrudController } from './generic-grud/generic-grud.controller';
+import { GenericCrudModule } from './generic-crud/generic-crud.module';
 
 @Module({
   imports: [
@@ -16,8 +15,9 @@ import { GenericGrudController } from './generic-grud/generic-grud.controller';
     GameModule,
     UserModule,
     ArticleModule,
+    GenericCrudModule,
   ],
-  controllers: [AppController, GenericGrudController],
-  providers: [AppService, GenericGrudService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
