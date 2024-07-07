@@ -6,10 +6,7 @@ import { ArticleService } from './article.service';
 
 @Controller('article')
 export class ArticleController extends GenericCrudController<ArticleDocument> {
-  constructor(
-    @InjectModel('Article')
-    readonly articleService: ArticleService,
-  ) {
+  constructor(readonly articleService: ArticleService) {
     super(articleService);
   }
 }
