@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import type { Media, Score } from '../types';
-import type { Review } from 'src/review/types';
+import type { Review } from '../../review/types';
 
 export class BaseGameDto {
   readonly title: string;
