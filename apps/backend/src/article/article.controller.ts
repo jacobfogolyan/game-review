@@ -1,41 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { GenericCrudController } from '../generic-crud/generic-crud.controller';
+import { ArticleDocument } from './schemas/article.schema';
+import { InjectModel } from '@nestjs/mongoose';
 import { ArticleService } from './article.service';
-import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
 
 @Controller('article')
-export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
-
-  @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.create(createArticleDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.articleService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.articleService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(id, updateArticleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.articleService.remove(id);
+export class ArticleController extends GenericCrudController<ArticleDocument> {
+  constructor(
+    @InjectModel('Article')
+    readonly articleService: ArticleService,
+  ) {
+    super(articleService);
   }
 }

@@ -4,7 +4,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Patch,
   Controller,
 } from '@nestjs/common';
 import { GenericCrudService } from './generic-crud.service';
@@ -12,8 +12,8 @@ import { CreateGenericDto, UpdateGenericDto } from './dto/generic.dto';
 import { Document } from 'mongoose';
 
 @Controller('generic-crud')
-export class GenericCrudController<T extends Document> {
-  constructor(private readonly service: GenericCrudService<T>) {}
+export abstract class GenericCrudController<T extends Document> {
+  constructor(private service: GenericCrudService<T>) {}
 
   @Post()
   create(@Body() createDto: CreateGenericDto<T>) {
@@ -30,7 +30,7 @@ export class GenericCrudController<T extends Document> {
     return this.service.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateDto: UpdateGenericDto<T>) {
     return this.service.update(id, updateDto);
   }

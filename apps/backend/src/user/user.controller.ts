@@ -1,41 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { GenericCrudController } from '../generic-crud/generic-crud.controller';
+import { UserDocument } from './schemas/user.schema';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.userService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+export class UserController extends GenericCrudController<UserDocument> {
+  constructor(readonly userService: UserService) {
+    super(userService);
   }
 }
