@@ -13,8 +13,6 @@ export class GenericCrudService<T extends Document>
   ) {}
 
   async create(createDto: CreateGenericDto<T>): Promise<T> {
-    const test = await this.findAll();
-    console.log(test);
     return this.model.create(createDto);
   }
 
