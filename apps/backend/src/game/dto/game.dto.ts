@@ -3,14 +3,16 @@ import type { Media, Scores } from '../types';
 
 export class BaseDto {
   readonly title: string;
+  readonly name: string;
   readonly description?: string;
   readonly developer?: string;
   readonly publisher?: string;
   readonly releaseDate?: Date;
   readonly genres?: string[];
   readonly platforms?: string[];
-  readonly media?: Media[];
+  readonly media?: Media;
   readonly scores?: Scores;
+  readonly user: string;
 }
 
 export class CreateGameDto extends PartialType(BaseDto) {}
