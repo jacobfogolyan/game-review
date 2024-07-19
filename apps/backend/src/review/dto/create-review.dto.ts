@@ -1,7 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-
-export class BaseReviewDto {
-  readonly title: string;
-}
+import { BaseReviewDto } from './base-review';
 
 export class CreateReviewDto extends PartialType(BaseReviewDto) {}
