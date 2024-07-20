@@ -1,5 +1,8 @@
 export interface Media {
+  coverImage: string;
   images: string[];
+  screenshots: string[];
+  trailers: string[];
   videos: string[];
 }
 

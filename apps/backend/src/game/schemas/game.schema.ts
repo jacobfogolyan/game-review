@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Document } from 'mongoose';
 import type { Media, Scores } from '../types';
-
+import { User } from 'src/user/schemas/user.schema';
+import * as mongoose from 'mongoose';
 export type GameDocument = HydratedDocument<Game>;
 
 @Schema()
@@ -35,6 +36,9 @@ export class Game extends Document {
 
   @Prop({ type: Object })
   scores: Scores;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game);
