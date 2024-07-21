@@ -51,6 +51,7 @@ export class UserDto {
   @IsNumber({}, { each: true })
   members?: number[];
 
+  // TODO: add teamMembers functionality
   @MaxLength(255, {
     each: true,
   })
