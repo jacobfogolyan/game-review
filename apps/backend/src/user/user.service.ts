@@ -10,10 +10,11 @@ export class UserService extends GenericCrudService<UserDocument> {
     super(userModel);
   }
 
-  async findbyUsernamePassword({
+  async findbyUsername({
     username,
-    password,
-  }: Pick<User, 'username' | 'password'>): Promise<User | undefined> {
-    return this.userModel.findOne({ username, password });
+  }: {
+    username: string;
+  }): Promise<User | undefined> {
+    return this.userModel.findOne({ username });
   }
 }
