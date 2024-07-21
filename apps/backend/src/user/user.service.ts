@@ -9,4 +9,11 @@ export class UserService extends GenericCrudService<UserDocument> {
   constructor(@InjectModel(User.name) readonly userModel: Model<UserDocument>) {
     super(userModel);
   }
+
+  async findbyUsernamePassword({
+    username,
+    password,
+  }: Pick<User, 'username' | 'password'>): Promise<User | undefined> {
+    return this.userModel.findOne({ username, password });
+  }
 }
