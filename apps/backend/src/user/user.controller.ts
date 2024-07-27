@@ -10,7 +10,7 @@ export class UserController extends GenericCrudController<UserDocument> {
   }
 
   @Get('/username')
-  findbyUsername(@Body() { username }: Pick<UserDocument, 'username'>) {
-    return this.userService.findbyUsername({ username });
+  findbyUsername(@Body() username: string) {
+    return this.userService.findbyUsername(username);
   }
 }
