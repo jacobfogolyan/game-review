@@ -9,7 +9,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDot: BaseAuthDto) {
-    return this.authService.signIn(signInDot.username, signInDot.password);
+    return this.authService.login(signInDot.username, signInDot.password);
   }
 
   @HttpCode(HttpStatus.OK)
