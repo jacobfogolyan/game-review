@@ -4,6 +4,9 @@ import {
   MaxLength,
   IsEmail,
   IsString,
+  IsArray,
+  ArrayMaxSize,
+  IsNumber,
 } from 'class-validator';
 
 export class UserDto {
@@ -11,26 +14,49 @@ export class UserDto {
   @IsString()
   @MinLength(5)
   @MaxLength(255)
-  readonly name: string;
+  readonly firstName: string;
 
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(255)
+  readonly password: string;
+
+  @IsNotEmpty()
   @IsString()
   @IsEmail()
   readonly email: string;
 
-  @IsString()
-  @MinLength(5)
-  @MaxLength(255)
-  readonly description?: string;
-
-  @MaxLength(5, {
-    each: true,
-  })
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsString({ each: true })
   permissions?: string[];
 
-  @MaxLength(5, {
+  // friends
+  @MaxLength(255, {
     each: true,
   })
+  @IsNumber({}, { each: true })
   members?: number[];
+
+  // TODO: add teamMembers functionality
+  @MaxLength(255, {
+    each: true,
+  })
+  @IsNumber({}, { each: true })
+  teamMembers?: number[];
 }
 
 export class CreateUserDto extends UserDto {}
