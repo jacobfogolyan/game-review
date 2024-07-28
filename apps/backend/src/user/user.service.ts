@@ -25,34 +25,17 @@ export class UserService extends GenericCrudService<UserDocument> {
       throw new BadRequestException('missing password');
     }
 
-    const hashedPassword = await hash(authDto.password);
-    const emailEncrypt = await encrypt(authDto.email);
-    const usernameEncrypt = await encrypt(authDto.username);
-
-    const newUser = {
-      ...authDto,
-      password: hashedPassword,
-      email: emailEncrypt,
-      usernanme: usernameEncrypt,
-    };
-
-    return this.userModel.create(newUser);
+    return this.userModel.create(authDto);
   }
 
   // send username or email as username
   async login(
     userDto: Pick<UserDto, 'username' | 'password'>,
   ): Promise<Pick<UserDocument, 'username' | 'password' | '_id'> | undefined> {
-    const { username: uName } = userDto;
-    const errorMessage = 'Incorrect username or password';
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(uName);
-
-    const query = isEmail ? { email: uName } : { username: uName };
-
-    const user = await this.userModel.findOne(query);
+    const user = await this.userModel.findOne({ username: userDto.username });
 
     if (!user) {
-      throw new BadRequestException(errorMessage);
+      throw new BadRequestException('user not found');
     }
 
     if (await compare(userDto.password, user.password)) {
@@ -63,14 +46,14 @@ export class UserService extends GenericCrudService<UserDocument> {
         _id,
       };
     }
-    throw new BadRequestException(errorMessage);
+    throw new BadRequestException('Incorrect username or password');
   }
 
-  async findbyUsername(username: string): Promise<User | undefined> {
+  async findByUsername(username: string): Promise<User | null> {
     return this.userModel.findOne({ username });
   }
 
-  async findbyEmail({ email }: { email: string }): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email });
   }
 }

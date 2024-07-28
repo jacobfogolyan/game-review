@@ -1,9 +1,6 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
-import { encrypt, hash } from '../user/helpers/security';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { hash, encrypt, decrypt } from '../user/helpers/security';
+import { compare } from 'bcrypt';
 
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -18,34 +15,54 @@ export class AuthService {
   ) {}
 
   async register(authDto: BaseAuthDto): Promise<User> {
-    const user = await this.userService.findbyUsername(authDto.username);
-    if (user) {
-      throw new BadRequestException('User already exists');
+    const emailHash = await hash(authDto.email);
+    const usernameHash = await hash(authDto.username);
+
+    const userByUsername = await this.userService.findByUsername(usernameHash);
+
+    if (userByUsername) {
+      new BadRequestException('User with username already exists');
     }
 
-    return this.userService.create(authDto);
+    const userByEmail = await this.userService.findByEmail(emailHash);
+
+    if (userByEmail) {
+      new BadRequestException('User with email already exists');
+    }
+
+    const passwordHash = await hash(authDto.password);
+
+    const query: BaseAuthDto = {
+      ...authDto,
+      email: emailHash,
+      username: usernameHash,
+      password: passwordHash,
+    };
+
+    return this.userService.create(query);
   }
 
   // send username or email as username
-  async signIn(
+  async login(
     username: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.userService.login({
-      username,
-      password,
-    });
+    const uName = await hash(username);
 
-    const encrytPassword = await hash(password);
+    const user = await this.userService.findByUsername(uName);
 
-    if (user?.password !== encrytPassword) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new BadRequestException('Incorrect username or password');
     }
-    const payload = { sub: user._id, username: user.username };
-    const access_token = await this.jwtService.signAsync(payload);
 
-    return {
-      access_token,
-    };
+    if (await compare(password, user.password)) {
+      const payload = { sub: user._id, username: user.username };
+      const access_token = await this.jwtService.signAsync(payload);
+
+      return {
+        access_token,
+      };
+    }
+    throw new BadRequestException('Incorrect email or password');
   }
 }
