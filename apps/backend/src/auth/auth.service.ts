@@ -48,8 +48,11 @@ export class AuthService {
     password: string,
   ): Promise<{ access_token: string }> {
     const uName = await hash(username);
+    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(username);
 
-    const user = await this.userService.findByUsername(uName);
+    const user = isEmail
+      ? await this.userService.findByEmail(uName)
+      : await this.userService.findByUsername(uName);
 
     if (!user) {
       throw new BadRequestException('Incorrect username or password');
