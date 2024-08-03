@@ -12,7 +12,6 @@ export class BaseGameDto {
   readonly platforms?: string[];
   readonly media?: Media;
   readonly scores?: Scores;
-  readonly user: string;
 }
 
 export class CreateGameDto extends PartialType(BaseGameDto) {}
