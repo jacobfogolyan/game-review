@@ -2,7 +2,7 @@ import { Schema, Document, model, Model } from "mongoose";
 import mongoose from "mongoose";
 
 interface ArticleDocument extends Document {
-  name: string;
+  title: string;
   description: string;
   releaseDate?: Date;
   genres?: string[];
@@ -13,7 +13,7 @@ interface ArticleDocument extends Document {
 }
 
 const articleSchema = new Schema<ArticleDocument>({
-  name: { type: String, required: true },
+  title: { type: String, required: true },
   description: { type: String, required: true },
   releaseDate: { type: Date },
   genres: { type: [String] },
