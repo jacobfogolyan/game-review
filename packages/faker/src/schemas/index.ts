@@ -1,11 +1,5 @@
-import { User, type UserDocument, userSchema } from "./user";
-import { Article, type ArticleDocument, articleSchema } from "./article";
-
-export {
-  User,
-  type UserDocument,
-  userSchema,
-  Article,
-  type ArticleDocument,
-  articleSchema,
-};
+export * from "./user";
+export * from "./article";
+export * from "./game";
+export * from "./review";
+export * from "./types";
