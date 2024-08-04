@@ -1,16 +1,15 @@
 import { faker } from "@faker-js/faker";
-import { User, Article, Game, Review } from "./schemas";
+import mongoose from "mongoose";
 
+import { User, Article, Game, Review } from "./schemas";
 import type {
   ArticleDocument,
   GameDocument,
   UserDocument,
   ReviewDocument,
-  Media,
 } from "./schemas";
 import { connect as connectToDb } from "./connect";
-import { generateObjects, getRandomStrings } from "./helpers";
-import mongoose from "mongoose";
+import { getRandomStrings } from "./helpers";
 
 const permissionGroups = ["guest", "author", "reviewer"];
 const consoleGroups = [
@@ -24,184 +23,105 @@ const consoleGroups = [
   "Asus ROG Ally",
 ];
 
-type GeneratedObject = {
-  [key: string]: any;
-};
+//const articleTemplate = (
+//  userIds: mongoose.Types.ObjectId[],
+//  gameIds: mongoose.Types.ObjectId[]
+//): ArticleDocument => {
+//  const user = getRandomStrings<mongoose.Types.ObjectId>(userIds, 1)[0];
+//  const game = getRandomStrings<mongoose.Types.ObjectId>(gameIds, 1)[0];
+//
+//  if (!user) {
+//    throw new Error("User not defined");
+//  }
+//
+//  if (!game) {
+//    throw new Error("User not defined");
+//  }
+//
+//  const article = new Article({
+//    title: faker.lorem.words(3),
+//    description: faker.lorem.paragraph(),
+//    releaseDate: faker.date.past(),
+//    genres: [faker.lorem.word(), faker.lorem.word()],
+//    platforms: getRandomStrings(consoleGroups, 2),
+//    permissions: getRandomStrings(permissionGroups, 2),
+//    user,
+//    game,
+//  });
+//
+//  return article;
+//};
 
-const userTemplate = (): GeneratedObject => ({
-  firstName: faker.person.firstName(),
-  lastName: faker.person.lastName(),
-  username: faker.internet.userName(),
-  password: faker.internet.password(),
-  email: faker.internet.email(),
-  permissions: getRandomStrings(permissionGroups, 2),
-});
+const generateUsers = (num: number): UserDocument[] =>
+  Array.from({ length: num }, () => ({
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    username: `${faker.person.firstName()}_${faker.person.lastName()}`,
+    password: faker.internet.password(),
+    email: faker.internet.email(),
+    permissions: getRandomStrings(permissionGroups, 2),
+  })) as UserDocument[];
 
-const articleTemplate = (
+const generateArticles = (
+  num: number,
   userIds: mongoose.Types.ObjectId[],
   gameIds: mongoose.Types.ObjectId[]
-): ArticleDocument => {
-  const user = getRandomStrings<mongoose.Types.ObjectId>(userIds, 1)[0];
-  const game = getRandomStrings<mongoose.Types.ObjectId>(gameIds, 1)[0];
-
-  if (!user) {
-    throw new Error("User not defined");
-  }
-
-  if (!game) {
-    throw new Error("User not defined");
-  }
-
-  const article = new Article({
+): ArticleDocument[] =>
+  Array.from({ length: num }, () => ({
     title: faker.lorem.words(3),
     description: faker.lorem.paragraph(),
     releaseDate: faker.date.past(),
     genres: [faker.lorem.word(), faker.lorem.word()],
     platforms: getRandomStrings(consoleGroups, 2),
     permissions: getRandomStrings(permissionGroups, 2),
-    user,
-    game,
-  });
+    user: getRandomStrings(userIds, 1)[0],
+    game: getRandomStrings(gameIds, 1)[0],
+  })) as ArticleDocument[];
 
-  return article;
-};
-
-const generateUsers = (num: number): UserDocument[] => {
-  const users: UserDocument[] = [];
-
-  for (let i = 0; i < num; i++) {
-    const firstName = faker.person.firstName();
-    const lastName = faker.person.lastName();
-    const username = `${firstName}_${lastName}`;
-    const password = faker.internet.password();
-    const email = faker.internet.email();
-
-    const permissions = getRandomStrings(permissionGroups, 2);
-
-    users.push({
-      firstName,
-      lastName,
-      username,
-      password,
-      email,
-      permissions,
-    } as UserDocument);
-  }
-
-  return users;
-};
-
-const generateArticles = (
-  num: number,
-  userIds: mongoose.Types.ObjectId[],
-  gameIds: mongoose.Types.ObjectId[]
-): ArticleDocument[] => {
-  const articles: ArticleDocument[] = [];
-
-  for (let i = 0; i < num; i++) {
-    const title = faker.lorem.words(3);
-    const description = faker.lorem.paragraph();
-    const releaseDate = faker.date.past();
-    const genres = [faker.lorem.word(), faker.lorem.word()];
-    const platforms = [faker.lorem.word(), faker.lorem.word()];
-    const permissions = getRandomStrings(permissionGroups, 2);
-    const user = getRandomStrings<mongoose.Types.ObjectId>(userIds, 1)[0];
-    const game = getRandomStrings<mongoose.Types.ObjectId>(gameIds, 1)[0];
-
-    articles.push({
-      title,
-      description,
-      releaseDate,
-      genres,
-      platforms,
-      permissions,
-      user,
-      game,
-    } as ArticleDocument);
-  }
-
-  return articles;
-};
-
-const generateGames = (nums: number) => {
-  const games: GameDocument[] = [];
-
-  for (let i = 0; i < nums; i++) {
-    const title = faker.lorem.words(3);
-    const name = faker.lorem.words(3);
-    const description = faker.lorem.paragraph();
-    const developer = faker.lorem.paragraph();
-    const publisher = faker.lorem.word();
-    const releaseDate = faker.date.past();
-    const genres = [faker.lorem.word(), faker.lorem.word()];
-    const platforms = getRandomStrings(consoleGroups, 2);
-    const media: Media = {
+const generateGames = (num: number): GameDocument[] =>
+  Array.from({ length: num }, () => ({
+    title: faker.lorem.words(3),
+    name: faker.lorem.words(3),
+    description: faker.lorem.paragraph(),
+    developer: faker.lorem.paragraph(),
+    publisher: faker.lorem.word(),
+    releaseDate: faker.date.past(),
+    genres: [faker.lorem.word(), faker.lorem.word()],
+    platforms: getRandomStrings(consoleGroups, 2),
+    media: {
       coverImage: faker.image.url(),
       images: [faker.image.url(), faker.image.url()],
       screenshots: [faker.image.url(), faker.image.url()],
       trailers: [faker.image.url(), faker.image.url()],
       videos: [faker.image.url(), faker.image.url()],
-    };
-
-    //TODO: score functionality
-    const scores = {};
-
-    games.push({
-      title,
-      name,
-      description,
-      developer,
-      publisher,
-      releaseDate,
-      genres,
-      platforms,
-      media,
-      scores,
-    } as GameDocument);
-  }
-  return games;
-};
+    },
+    scores: {},
+  })) as GameDocument[];
 
 const generateReviews = (
-  nums: number,
+  num: number,
   authorIds: mongoose.Types.ObjectId[],
   gameIds: mongoose.Types.ObjectId[]
-) => {
-  const reviews: ReviewDocument[] = [];
-
-  for (let i = 0; i < nums; i++) {
-    const title = faker.lorem.words(3);
-    const description = faker.lorem.paragraph();
-    const media: Media = {
+): ReviewDocument[] =>
+  Array.from({ length: num }, () => ({
+    title: faker.lorem.words(3),
+    description: faker.lorem.paragraph(),
+    media: {
       coverImage: faker.image.url(),
       images: [faker.image.url(), faker.image.url()],
       screenshots: [faker.image.url(), faker.image.url()],
       trailers: [faker.image.url(), faker.image.url()],
       videos: [faker.image.url(), faker.image.url()],
-    };
-
-    const gameId = getRandomStrings<mongoose.Types.ObjectId>(gameIds, 1)[0];
-    const author = getRandomStrings<mongoose.Types.ObjectId>(authorIds, 1)[0];
-
-    const updatedAt = faker.date.recent();
-    const postedAt = faker.date.past();
-
-    reviews.push({
-      title,
-      description,
-      media,
-      gameId,
-      author,
-      updatedAt,
-      postedAt,
-    } as ReviewDocument);
-  }
-  return reviews;
-};
+    },
+    gameId: getRandomStrings(gameIds, 1)[0],
+    author: getRandomStrings(authorIds, 1)[0],
+    updatedAt: faker.date.recent(),
+    postedAt: faker.date.past(),
+  })) as ReviewDocument[];
 
 const seedDatabase = async () => {
   try {
-    connectToDb();
+    await connectToDb();
     const users = generateUsers(5);
     const insertedUsers = await User.insertMany(users);
     const userIds: mongoose.Types.ObjectId[] = insertedUsers.map(
@@ -221,7 +141,6 @@ const seedDatabase = async () => {
     })
       .select("_id")
       .exec();
-
     const authorIds = getAuthors.map((author) => author._id);
 
     const articles = generateArticles(100, authorIds, gameIds);
