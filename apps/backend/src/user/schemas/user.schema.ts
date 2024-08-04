@@ -23,6 +23,7 @@ export class User extends Document {
   @Prop({ type: [String], default: [] })
   permissions: string[];
 
+  //TODO:memers
   @Prop({ type: [Number], default: [] })
   members: number[];
 
