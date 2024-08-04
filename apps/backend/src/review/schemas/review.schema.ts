@@ -9,10 +9,10 @@ export type ReviewDocument = HydratedDocument<Review>;
 @Schema()
 export class Review extends Document {
   @Prop({ required: true })
-  reviewTitle: string;
+  title: string;
 
   @Prop({ required: true })
-  reveiewDescription: string;
+  description: string;
 
   @Prop({ type: Object })
   media: Media;
@@ -28,9 +28,6 @@ export class Review extends Document {
 
   @Prop({ type: Date, required: true })
   postedAt: Date;
-
-  @Prop({ required: true })
-  description: string;
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(Review);
