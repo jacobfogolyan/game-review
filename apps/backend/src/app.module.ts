@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
 import { ReviewModule } from './review/review.module';
 import { AuthModule } from './auth/auth.module';
+import { GameDeveloperModule } from './game-developer/game-developer.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     ReviewModule,
     AuthModule,
+    GameDeveloperModule,
   ],
   controllers: [AppController],
   providers: [AppService],
