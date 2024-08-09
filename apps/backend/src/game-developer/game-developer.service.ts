@@ -1,26 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGameDeveloperDto } from './dto/create-game-developer.dto';
-import { UpdateGameDeveloperDto } from './dto/update-game-developer.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { GenericCrudService } from 'src/generic-crud/generic-crud.service';
+import {
+  GameDeveloper,
+  GameDeveloperDocument,
+} from './schemas/game-developer.schema';
 
 @Injectable()
-export class GameDeveloperService {
-  create(createGameDeveloperDto: CreateGameDeveloperDto) {
-    return 'This action adds a new gameDeveloper';
-  }
-
-  findAll() {
-    return `This action returns all gameDeveloper`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} gameDeveloper`;
-  }
-
-  update(id: number, updateGameDeveloperDto: UpdateGameDeveloperDto) {
-    return `This action updates a #${id} gameDeveloper`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} gameDeveloper`;
+export class GameDeveloperService extends GenericCrudService<GameDeveloperDocument> {
+  constructor(
+    @InjectModel(GameDeveloper.name)
+    readonly gameDeveloperModel: Model<GameDeveloperDocument>,
+  ) {
+    super(gameDeveloperModel);
   }
 }

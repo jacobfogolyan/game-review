@@ -6,9 +6,7 @@ import { GenericCrudService } from 'src/generic-crud/generic-crud.service';
 
 @Injectable()
 export class GameService extends GenericCrudService<GameDocument> {
-  constructor(
-    @InjectModel(Game.name) readonly gameModel: Model<GameDocument>, // Correctly type the model
-  ) {
+  constructor(@InjectModel(Game.name) readonly gameModel: Model<GameDocument>) {
     super(gameModel);
   }
 }
