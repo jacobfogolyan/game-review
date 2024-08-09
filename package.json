@@ -14,7 +14,8 @@
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "prettier": "^3.2.5",
-    "turbo": "latest"
+    "turbo": "latest",
+	"backend": "*"
   },
   "engines": {
     "node": ">=18"
