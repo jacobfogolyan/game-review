@@ -103,35 +103,59 @@ const generateReviews = (
     postedAt: faker.date.past(),
   }));
 
+const seedUsers = async (count: number) => {
+  const users = generateUsers(count);
+  await User.insertMany(users);
+};
+
+const seedGames = async (count: number) => {
+  const games = generateGames(count);
+  const insertedGames = await Game.insertMany(games);
+  return insertedGames.map((game) => game._id);
+};
+
+const getAuthorIds = async (): Promise<mongoose.Types.ObjectId[]> => {
+  const authors = await User.find({ permissions: { $in: ["author"] } })
+    .select("_id")
+    .exec();
+  return authors.map((author) => author._id);
+};
+
+const seedArticles = async (
+  count: number,
+  authorIds: mongoose.Types.ObjectId[],
+  gameIds: mongoose.Types.ObjectId[],
+) => {
+  const articles = generateArticles(count, authorIds, gameIds);
+  await Article.insertMany(articles);
+};
+
+const seedReviews = async (
+  count: number,
+  authorIds: mongoose.Types.ObjectId[],
+  gameIds: mongoose.Types.ObjectId[],
+) => {
+  const reviews = generateReviews(count, authorIds, gameIds);
+  await Review.insertMany(reviews);
+};
+
 const seedDatabase = async () => {
   try {
     await connectToDb();
-    const users = generateUsers(5);
-    await User.insertMany(users);
 
-    const games = generateGames(10);
-    const insertedGames = await Game.insertMany(games);
-    const gameIds: mongoose.Types.ObjectId[] = insertedGames.map(
-      (game) => game._id,
-    );
+    await seedUsers(5);
 
-    const getAuthors: UserDocument[] = await User.find({
-      permissions: {
-        $in: ["author"],
-      },
-    })
-      .select("_id")
-      .exec();
-    const authorIds = getAuthors.map((author) => author._id);
+    const [gameIds, authorIds] = await Promise.all([
+      seedGames(10),
+      getAuthorIds(),
+    ]);
 
-    const articles = generateArticles(100, authorIds, gameIds);
-    await Article.insertMany(articles);
-
-    const reviews = generateReviews(100, authorIds, gameIds);
-    await Review.insertMany(reviews);
+    await Promise.all([
+      seedArticles(100, authorIds, gameIds),
+      seedReviews(100, authorIds, gameIds),
+    ]);
   } catch (error) {
-    console.error(error);
+    console.error("Error seeding database:", error);
   }
 };
-
 seedDatabase();
