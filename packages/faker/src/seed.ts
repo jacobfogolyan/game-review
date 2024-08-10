@@ -8,6 +8,7 @@ import type {
   UserDocument,
   ReviewDocument,
 } from "./schemas";
+
 import { connect as connectToDb } from "./connect";
 import { getRandomStrings } from "./helpers";
 
@@ -23,51 +24,35 @@ const consoleGroups = [
   "Asus ROG Ally",
 ];
 
-//const articleTemplate = (
-//  userIds: mongoose.Types.ObjectId[],
-//  gameIds: mongoose.Types.ObjectId[]
-//): ArticleDocument => {
-//  const user = getRandomStrings<mongoose.Types.ObjectId>(userIds, 1)[0];
-//  const game = getRandomStrings<mongoose.Types.ObjectId>(gameIds, 1)[0];
-//
-//  if (!user) {
-//    throw new Error("User not defined");
-//  }
-//
-//  if (!game) {
-//    throw new Error("User not defined");
-//  }
-//
-//  const article = new Article({
-//    title: faker.lorem.words(3),
-//    description: faker.lorem.paragraph(),
-//    releaseDate: faker.date.past(),
-//    genres: [faker.lorem.word(), faker.lorem.word()],
-//    platforms: getRandomStrings(consoleGroups, 2),
-//    permissions: getRandomStrings(permissionGroups, 2),
-//    user,
-//    game,
-//  });
-//
-//  return article;
-//};
+const generateDocuments = <T extends mongoose.Document>(
+  model: mongoose.Model<T>,
+  num: number,
+  generateFields: () => Partial<T>,
+): T[] => {
+  const documents: T[] = [];
+  for (let i = 0; i < num; i++) {
+    const document = new model(generateFields());
+    documents.push(document);
+  }
+  return documents;
+};
 
 const generateUsers = (num: number): UserDocument[] =>
-  Array.from({ length: num }, () => ({
-    firstName: faker.person.firstName(),
+  generateDocuments(User, num, () => ({
     lastName: faker.person.lastName(),
+    firstName: faker.person.firstName(),
     username: `${faker.person.firstName()}_${faker.person.lastName()}`,
     password: faker.internet.password(),
     email: faker.internet.email(),
     permissions: getRandomStrings(permissionGroups, 2),
-  })) as UserDocument[];
+  }));
 
 const generateArticles = (
   num: number,
   userIds: mongoose.Types.ObjectId[],
-  gameIds: mongoose.Types.ObjectId[]
+  gameIds: mongoose.Types.ObjectId[],
 ): ArticleDocument[] =>
-  Array.from({ length: num }, () => ({
+  generateDocuments(Article, num, () => ({
     title: faker.lorem.words(3),
     description: faker.lorem.paragraph(),
     releaseDate: faker.date.past(),
@@ -76,10 +61,10 @@ const generateArticles = (
     permissions: getRandomStrings(permissionGroups, 2),
     user: getRandomStrings(userIds, 1)[0],
     game: getRandomStrings(gameIds, 1)[0],
-  })) as ArticleDocument[];
+  }));
 
 const generateGames = (num: number): GameDocument[] =>
-  Array.from({ length: num }, () => ({
+  generateDocuments(Game, num, () => ({
     title: faker.lorem.words(3),
     name: faker.lorem.words(3),
     description: faker.lorem.paragraph(),
@@ -95,17 +80,16 @@ const generateGames = (num: number): GameDocument[] =>
       trailers: [faker.image.url(), faker.image.url()],
       videos: [faker.image.url(), faker.image.url()],
     },
-    scores: {},
-  })) as GameDocument[];
+  }));
 
 const generateReviews = (
   num: number,
   authorIds: mongoose.Types.ObjectId[],
-  gameIds: mongoose.Types.ObjectId[]
+  gameIds: mongoose.Types.ObjectId[],
 ): ReviewDocument[] =>
-  Array.from({ length: num }, () => ({
-    title: faker.lorem.words(3),
+  generateDocuments(Review, num, () => ({
     description: faker.lorem.paragraph(),
+    title: faker.lorem.words(3),
     media: {
       coverImage: faker.image.url(),
       images: [faker.image.url(), faker.image.url()],
@@ -117,21 +101,18 @@ const generateReviews = (
     author: getRandomStrings(authorIds, 1)[0],
     updatedAt: faker.date.recent(),
     postedAt: faker.date.past(),
-  })) as ReviewDocument[];
+  }));
 
 const seedDatabase = async () => {
   try {
     await connectToDb();
     const users = generateUsers(5);
-    const insertedUsers = await User.insertMany(users);
-    const userIds: mongoose.Types.ObjectId[] = insertedUsers.map(
-      (user: UserDocument) => user._id
-    );
+    await User.insertMany(users);
 
     const games = generateGames(10);
     const insertedGames = await Game.insertMany(games);
     const gameIds: mongoose.Types.ObjectId[] = insertedGames.map(
-      (game) => game._id
+      (game) => game._id,
     );
 
     const getAuthors: UserDocument[] = await User.find({
@@ -144,10 +125,6 @@ const seedDatabase = async () => {
     const authorIds = getAuthors.map((author) => author._id);
 
     const articles = generateArticles(100, authorIds, gameIds);
-    const insertedArticles = await Article.insertMany(articles);
-    const articleIds: mongoose.Types.ObjectId[] = insertedArticles.map(
-      (article) => article._id
-    );
     await Article.insertMany(articles);
 
     const reviews = generateReviews(100, authorIds, gameIds);
