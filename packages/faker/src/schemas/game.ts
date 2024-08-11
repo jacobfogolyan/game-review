@@ -1,12 +1,12 @@
-import { Schema, Document, model, Model } from "mongoose";
+import mongoose, { Schema, Document, model, Model } from "mongoose";
 import type { Media, Scores } from "./types";
 
 interface GameDocument extends Document {
   title: string;
   name: string;
   description: string;
-  developer: string;
-  publisher?: string;
+  developer: mongoose.Types.ObjectId;
+  publisher?: mongoose.Types.ObjectId;
   releaseDate?: Date;
   genres?: string[];
   platforms?: string[];
@@ -18,8 +18,16 @@ const gameSchema = new Schema<GameDocument>({
   title: { type: String, required: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
-  developer: { type: String, required: true },
-  publisher: { type: String, required: true },
+  publisher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Publisher",
+    required: true,
+  },
+  developer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "GameDeveloper",
+    required: true,
+  },
   releaseDate: { type: Date },
   genres: { type: [String] },
   platforms: { type: [String] },

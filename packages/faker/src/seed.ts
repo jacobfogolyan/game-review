@@ -1,16 +1,25 @@
 import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
 
-import { User, Article, Game, Review } from "./schemas";
+import {
+  User,
+  Article,
+  Game,
+  Review,
+  GameDeveloper,
+  GameDeveloperDocument,
+  Publisher,
+} from "./schemas";
 import type {
   ArticleDocument,
   GameDocument,
   UserDocument,
   ReviewDocument,
+  PublisherDocument,
 } from "./schemas";
 
 import { connect as connectToDb } from "./connect";
-import { getRandomStrings } from "./helpers";
+import { getRandomStrings, generateDocuments } from "./helpers";
 
 const permissionGroups = ["guest", "author", "reviewer"];
 const consoleGroups = [
@@ -23,19 +32,6 @@ const consoleGroups = [
   "Steam Deck",
   "Asus ROG Ally",
 ];
-
-const generateDocuments = <T extends mongoose.Document>(
-  model: mongoose.Model<T>,
-  num: number,
-  generateFields: () => Partial<T>,
-): T[] => {
-  const documents: T[] = [];
-  for (let i = 0; i < num; i++) {
-    const document = new model(generateFields());
-    documents.push(document);
-  }
-  return documents;
-};
 
 const generateUsers = (num: number): UserDocument[] =>
   generateDocuments(User, num, () => ({
@@ -63,13 +59,17 @@ const generateArticles = (
     game: getRandomStrings(gameIds, 1)[0],
   }));
 
-const generateGames = (num: number): GameDocument[] =>
+const generateGames = (
+  num: number,
+  publisher: mongoose.Types.ObjectId[],
+  developer: mongoose.Types.ObjectId[],
+): GameDocument[] =>
   generateDocuments(Game, num, () => ({
     title: faker.lorem.words(3),
     name: faker.lorem.words(3),
     description: faker.lorem.paragraph(),
-    developer: faker.lorem.paragraph(),
-    publisher: faker.lorem.word(),
+    developer: getRandomStrings(developer, 1)[0],
+    publisher: getRandomStrings(publisher, 1)[0],
     releaseDate: faker.date.past(),
     genres: [faker.lorem.word(), faker.lorem.word()],
     platforms: getRandomStrings(consoleGroups, 2),
@@ -103,13 +103,28 @@ const generateReviews = (
     postedAt: faker.date.past(),
   }));
 
+const generateGameDeveloper = (num: number): GameDeveloperDocument[] =>
+  generateDocuments(GameDeveloper, num, () => ({
+    name: faker.lorem.words(2),
+    country: faker.lorem.words(1),
+  }));
+
+const generatePublisher = (num: number): PublisherDocument[] =>
+  generateDocuments(Publisher, num, () => ({
+    name: faker.lorem.words(2),
+  }));
+
 const seedUsers = async (count: number) => {
   const users = generateUsers(count);
   await User.insertMany(users);
 };
 
-const seedGames = async (count: number) => {
-  const games = generateGames(count);
+const seedGames = async (
+  count: number,
+  publisher: mongoose.Types.ObjectId[],
+  developer: mongoose.Types.ObjectId[],
+) => {
+  const games = generateGames(count, publisher, developer);
   const insertedGames = await Game.insertMany(games);
   return insertedGames.map((game) => game._id);
 };
@@ -139,15 +154,35 @@ const seedReviews = async (
   await Review.insertMany(reviews);
 };
 
+const seedGameDeveloper = async (
+  count: number,
+): Promise<mongoose.Types.ObjectId[]> => {
+  const developers = generateGameDeveloper(count);
+  await GameDeveloper.insertMany(developers);
+  return developers.map((developer) => developer._id);
+};
+
+const seedPublisher = async (
+  count: number,
+): Promise<mongoose.Types.ObjectId[]> => {
+  const publishers = generatePublisher(count);
+  await Publisher.insertMany(publishers);
+  return publishers.map((publisher) => publisher._id);
+};
+
 const seedDatabase = async () => {
   try {
     await connectToDb();
 
-    await seedUsers(5);
+    const [devIds, publisherIds] = await Promise.all([
+      seedGameDeveloper(20),
+      seedPublisher(10),
+    ]);
 
     const [gameIds, authorIds] = await Promise.all([
-      seedGames(10),
+      seedGames(10, publisherIds, devIds),
       getAuthorIds(),
+      seedUsers(5),
     ]);
 
     await Promise.all([
@@ -158,4 +193,5 @@ const seedDatabase = async () => {
     console.error("Error seeding database:", error);
   }
 };
+
 seedDatabase();

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export function getRandomStrings<T>(arr: Array<T>, num: number): T[] {
   if (num > arr.length) {
     throw new Error("number is greater than array length");
@@ -16,3 +18,16 @@ export function getRandomStrings<T>(arr: Array<T>, num: number): T[] {
 
   return randomIndices;
 }
+
+export const generateDocuments = <T extends mongoose.Document>(
+  model: mongoose.Model<T>,
+  num: number,
+  generateFields: () => Partial<T>,
+): T[] => {
+  const documents: T[] = [];
+  for (let i = 0; i < num; i++) {
+    const document = new model(generateFields());
+    documents.push(document);
+  }
+  return documents;
+};
