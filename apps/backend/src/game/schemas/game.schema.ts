@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Document } from 'mongoose';
+import mongoose, { HydratedDocument, Document } from 'mongoose';
 import type { Media, Scores } from '../types';
 export type GameDocument = HydratedDocument<Game>;
 
@@ -14,10 +14,18 @@ export class Game extends Document {
   @Prop()
   description: string;
 
-  @Prop()
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'GameDeveloper',
+    required: true,
+  })
   developer: string;
 
-  @Prop()
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Publisher',
+    required: true,
+  })
   publisher: string;
 
   @Prop()
