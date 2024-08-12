@@ -1,21 +1,71 @@
-import { PartialType } from '@nestjs/mapped-types';
-import type { Media, Scores } from '../types';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsEmail,
+  IsString,
+  IsArray,
+  ArrayMaxSize,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 
 export class BaseGameDto {
-  readonly title: string;
-  readonly name: string;
-  readonly description?: string;
-  readonly developer?: string;
-  readonly publisher?: string;
-  readonly releaseDate?: Date;
-  readonly genres?: string[];
-  readonly platforms?: string[];
-  readonly media?: Media;
-  readonly scores?: Scores;
+  @ApiProperty({ required: true, type: String })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly firstName: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly lastName: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly username: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(255)
+  readonly password: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  readonly email: string;
+
+  @ApiPropertyOptional({ type: [String], isArray: true })
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsString({ each: true })
+  @IsOptional()
+  readonly permissions?: string[];
+
+  @ApiPropertyOptional({ type: [Number], isArray: true })
+  @IsNumber({}, { each: true })
+  @MaxLength(255, { each: true })
+  @IsOptional()
+  readonly members?: number[];
+
+  @ApiPropertyOptional({ type: [Number], isArray: true })
+  @IsNumber({}, { each: true })
+  @MaxLength(255, { each: true })
+  @IsOptional()
+  readonly teamMembers?: number[];
 }
 
-export class CreateGameDto extends PartialType(BaseGameDto) {}
+export class CreateGameDto extends BaseGameDto {}
 
-export class UpdateGameDto extends PartialType(BaseGameDto) {}
-
-export class DeleteGameDto extends PartialType(BaseGameDto) {}
+export class UpdateGameDto extends BaseGameDto {}
