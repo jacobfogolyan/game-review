@@ -4,17 +4,20 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { GenericCrudService } from '../generic-crud/generic-crud.service';
 import { UserDto } from './dto/user.dto';
-import { encrypt, hash } from './helpers/security';
 import { compare } from 'bcrypt';
-import { BaseAuthDto } from 'src/auth/dto/auth.dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
-export class UserService extends GenericCrudService<UserDocument> {
+export class UserService extends GenericCrudService<
+  UserDocument,
+  CreateUserDto,
+  UpdateUserDto
+> {
   constructor(@InjectModel(User.name) readonly userModel: Model<UserDocument>) {
     super(userModel);
   }
 
-  async create(authDto: BaseAuthDto): Promise<UserDocument> {
+  async create(authDto: CreateUserDto): Promise<UserDocument> {
     if (!authDto.email) {
       throw new BadRequestException('missing email');
     }
@@ -49,11 +52,13 @@ export class UserService extends GenericCrudService<UserDocument> {
     throw new BadRequestException('Incorrect username or password');
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return this.userModel.findOne({ username });
+  async findByUsername({
+    username,
+  }: Pick<UserDto, 'username'>): Promise<User | null> {
+    return this.userModel.findOne<User>({ username });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail({ email }: Pick<UserDto, 'email'>): Promise<User | null> {
     return this.userModel.findOne({ email });
   }
 }

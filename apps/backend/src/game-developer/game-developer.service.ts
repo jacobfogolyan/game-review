@@ -6,9 +6,14 @@ import {
   GameDeveloper,
   GameDeveloperDocument,
 } from './schemas/game-developer.schema';
+import { CreateGameDeveloperDto, UpdateGameDeveloperDto } from './dto';
 
 @Injectable()
-export class GameDeveloperService extends GenericCrudService<GameDeveloperDocument> {
+export class GameDeveloperService extends GenericCrudService<
+  GameDeveloperDocument,
+  CreateGameDeveloperDto,
+  UpdateGameDeveloperDto
+> {
   constructor(
     @InjectModel(GameDeveloper.name)
     readonly gameDeveloperModel: Model<GameDeveloperDocument>,

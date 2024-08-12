@@ -12,11 +12,15 @@ import { CreateGenericDto, UpdateGenericDto } from './dto/generic.dto';
 import { Document } from 'mongoose';
 
 @Controller('generic-crud')
-export abstract class GenericCrudController<T extends Document> {
-  constructor(private service: GenericCrudService<T>) {}
+export abstract class GenericCrudController<
+  T extends Document,
+  CreateDto,
+  UpdateDto,
+> {
+  constructor(private service: GenericCrudService<T, CreateDto, UpdateDto>) {}
 
   @Post()
-  create(@Body() createDto: CreateGenericDto<T>) {
+  create(@Body() createDto: CreateGenericDto<CreateDto>) {
     return this.service.create(createDto);
   }
 
@@ -31,7 +35,10 @@ export abstract class GenericCrudController<T extends Document> {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateGenericDto<T>) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateGenericDto<UpdateDto>,
+  ) {
     return this.service.update(id, updateDto);
   }
 

@@ -4,7 +4,7 @@ import { CreateGenericDto, UpdateGenericDto } from './dto/generic.dto';
 import { IGenericCrudService } from './types';
 
 @Injectable()
-export class GenericCrudService<T extends Document>
+export class GenericCrudService<T extends Document, CreateDto, UpdateDto>
   implements IGenericCrudService<T>
 {
   constructor(
@@ -12,7 +12,7 @@ export class GenericCrudService<T extends Document>
     private readonly model: Model<T>,
   ) {}
 
-  async create(createDto: CreateGenericDto<T>): Promise<T> {
+  async create(createDto: CreateGenericDto<CreateDto>): Promise<T> {
     return this.model.create(createDto);
   }
 
@@ -24,7 +24,7 @@ export class GenericCrudService<T extends Document>
     return this.model.findById(id).exec();
   }
 
-  async update(id: string, updateDto: UpdateGenericDto<T>): Promise<T> {
+  async update(id: string, updateDto: UpdateGenericDto<UpdateDto>): Promise<T> {
     return this.model.findByIdAndUpdate(id, updateDto, { new: true }).exec();
   }
 
