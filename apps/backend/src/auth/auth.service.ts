@@ -14,9 +14,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register({ username, email }: CreateUserDto): Promise<User> {
-    const emailHash = await hash(email);
-    const usernameHash = await hash(username);
+  async register(authDto: CreateUserDto): Promise<User> {
+    const emailHash = await hash(authDto.email);
+    const usernameHash = await hash(authDto.username);
 
     const userByUsername = await this.userService.findByUsername({
       username: usernameHash,
